@@ -1,0 +1,48 @@
+# rank weight test of Bullet Product
+
+# generating vector of length "code_length" and rank "rank"
+def random_small_rank_vec_generation(code_length,rank):
+    B = matrix(Fqm.base_ring(),rank,m,0)
+    while B.rank() != rank:
+        B = matrix(Fqm.base_ring(),[vector(Fqm.random_element()) for i in range(rank)])
+    C = matrix(Fqm.base_ring(),code_length,m,0)
+    while C.rank() != rank:
+        C = matrix(Fqm.base_ring(),code_length,rank,[Fqm.base_ring().random_element() for _ in range(code_length*rank)]) * B
+    return vector(Fqm,[C[i] for i in range(code_length)])
+
+def rank_V(z,code_length):  # compute the rank weight of vector of rank weight
+    # tranform vector of small rank into  code_length * m in basis ring of Fqm 
+    VM = matrix(Fqm.base_ring(),code_length,m,[vector(z[i]) for i in range(n)])
+    return VM.rank()
+
+def Bullet_Product(small_vector,b,code_dimension):
+    Dig = diagonal_matrix(Fqm, k, [b**i for i in range(1,k+1)])
+    D =  block_diagonal_matrix([Dig,Dig])
+    return small_vector*D
+
+def test(totalltests):
+    succ1 = 0
+    succ2 = 0
+    flaure = 0
+    for npair in range(totalltests):
+        alpha = Fqm.random_element()
+        rr = rank_V(Bullet_Product(e,alpha,k),n)
+        try:
+            if rr ==  min(m,n):
+                succ1 += 1
+            elif rr > t:
+                succ2 += 1
+            else:
+                flaure += 1
+        except:
+            print("Unexpected error", sys.exc_info()[0])
+            
+    print ("rank = min(n,m): %d/%d" % (succ1,totalltests))
+    print ("rank > r: %d/%d" % (succ2,totalltests))
+    print ("rank = r : %d/%d" % (flaure,totalltests))
+
+# n: code_length and n = 2k,  k: dimension,  rank weigth: t
+(q,m,n,k,r) = (2,29,32,16,9)
+Fqm = GF(q^m)
+e = random_small_rank_vec_generation(n,r)
+test(10000)
