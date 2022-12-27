@@ -1,4 +1,5 @@
 # run on sagemath
+# https://github.com/YCSong232431/rank-weight-test-of-Bullet-Product
 # rank weight test of Bullet Product
 
 # generating vector of length "code_length" and rank "rank"
